@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.yangyy.jx3.mapper.CommodityTransMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="cn.yangyy.jx3.entity.CommodityTrans">
+		<id column="id" property="id" />
+		<result column="commodity_id" property="commodityId" />
+		<result column="server_id" property="serverId" />
+		<result column="deal_price" property="dealPrice" />
+		<result column="quotation" property="quotation" />
+		<result column="transaction_date" property="transactionDate" />
+		<result column="trd_platform" property="trdPlatform" />
+		<result column="img" property="img" />
+		<result column="create_by" property="createBy" />
+		<result column="create_date" property="createDate" />
+		<result column="del_flag" property="delFlag" />
+	</resultMap>
+
+	<resultMap id="transInfo" type="cn.yangyy.jx3.entity.vo.CommodityTransVo" extends="BaseResultMap">
+
+	</resultMap>
+
+	<select id="pageInfo" resultMap="transInfo">
+		SELECT t.*,t1.`name` commodityName,
+		t2.`network` network,
+		t2.`serial` serial,
+		t2.`name` serverName
+		FROM
+		jx3_commodity_trans t,jx3_commodity t1,jx3_server_info t2
+		 WHERE t.`commodity_id` = t1.`id` AND t.`server_id` = t2.`id`
+		 <if test="query.commodityId != null and query.commodityId != ''">
+			 and t.commodity_id = #{query.commodityId}
+		 </if>
+		<if test="query.serverId != null and query.serverId != ''">
+			and t.server_id = #{query.serverId}
+		</if>
+		<if test="query.quotation != null and query.quotation != ''">
+			and t.quotation = #{query.quotation}
+		</if>
+		<if test="query.trdPlatform != null and query.trdPlatform != ''">
+			and t.trd_platform = #{query.serverId}
+		</if>
+		<if test="query.delFlag != null and query.delFlag != ''">
+			and t.del_flag = #{query.delFlag}
+		</if>
+
+	</select>
+
+</mapper>

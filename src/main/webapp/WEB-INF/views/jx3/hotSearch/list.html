@@ -1,0 +1,127 @@
+<#include "/common/layout.html">
+<@header>
+</@header>
+<@body>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            <small>剑网三数据管理 > 热搜管理</small>
+        </h1>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <!-- Your Page Content Here -->
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <form action="/jx3/hotSearch/list" method="post" id="searchForm" class="form-inline">
+                        <input type="hidden" name="pageNumber" id="pageNumber" value="${page.pageNumber!'1'}" />
+                        <input type="hidden" name="pageSize" id="pageSize" value="${page.size!'15'}" />
+                        <div class="box-header">
+                            <@shiro.hasPermission name="addHotSearch">
+                            <div class="input-group">
+                                <a class="btn btn-primary dialog" href="javascript:;" data-url="/jx3/hotSearch/add"
+                                   data-title="添加" data-width="850" data-height="400"><i class="fa fa-plus"></i>添加</a>
+                            </div>
+                        </@shiro.hasPermission>
+                    <div class="input-group">
+                        <div class="input-group">
+                            <select id="status" name="status" class="form-control" style="width: 100%;">
+                                <option value="">类型</option>
+                                <option value="0" <#if query.status==0>selected</#if>>后台指定</option>
+                                <option value="1" <#if query.viewFlag==1>selected</#if>>系统生成</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <select id="viewFlag" name="viewFlag" class="form-control" style="width: 100%;">
+                                <option value="">全部</option>
+                                    <option value="0" <#if query.viewFlag==0>selected</#if>>显示</option>
+                                    <option value="1" <#if query.viewFlag==1>selected</#if>>隐藏</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" name="searchText" value="${query.searchText!''}" class="form-control"
+                                   placeholder="请输入热搜词">
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" type="button" onclick="page('searchForm','1')"><i class="fa fa-search"></i></button>
+                                <a href="/jx3/hotSearch/list" class="btn btn-default"><i
+                                        class="fa fa-refresh"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group pull-right">
+                        <button type="button" class="btn btn-primary btn-flat" onclick="exportTo('热搜数据');"><i
+                                class="fa fa-file-excel-o"></i> 导出
+                        </button>
+                    </div>
+                </div><!-- /.box-header -->
+                </form>
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover">
+                        <tr>
+                            <th width="100px"><input value="root" type="checkbox" class="minimal checkbox-toolbar">
+                            </th>
+                            <th>热搜词</th>
+                            <th>数据类型</th>
+                            <th>搜索次数</th>
+                            <th>是否显示</th>
+                            <th width="150px">操作</th>
+                        </tr>
+                        <#list page.getRecords() as item>
+                        <tr>
+                            <td>
+                                <label>
+                                    <input value="${item.id}" name="itemState" type="checkbox"
+                                           class="minimal checkbox-item">
+                                </label>
+                            </td>
+                            <td>${item.searchText}</td>
+                        <td>
+                            <#if item.status==0>后台指定</#if>
+                            <#if item.status==1>系统生成</#if>
+                        </td>
+                        <td>${item.searchCount}</td>
+                        <td>
+                            <#if item.viewFlag==0>显示</#if>
+                            <#if item.viewFlag==1>隐藏</#if>
+                        </td>
+                        <td>
+                            <@shiro.hasPermission name="deleteHotSearch">
+                            <#if item.viewFlag==0>
+                            <a class="btn btn-danger btn-xs" data-toggle="tooltip" title="删除" data-placement="bottom"
+                               data-tiggle="ajax"
+                               data-submit-url="/jx3/hotSearch/delete?id=${(item.id)!}"
+                               data-confirm="您确定不展示该热搜词吗?">隐藏</a>
+                        </#if>
+                        </@shiro.hasPermission>
+                    <@shiro.hasPermission name="updateHotSearch">
+
+                        <a class="btn btn-primary btn-xs dialog" href="javascript:;"  data-placement="bottom" data-url="/jx3/hotSearch/update/${item.id!}"
+                           data-title="修改" data-width="850" data-height="500"></i>修改</a>
+
+                    </@shiro.hasPermission>
+
+                        </td>
+                        </tr>
+                    </#list>
+                    </table>
+                </div><!-- /.box-body -->
+                <div class="box-footer row">
+                    <!--<div class="col-md-6">-->
+                        <!--<#include "/common/paginateBar.html" />-->
+                        <!--<@paginate pageData=page actionUrl="/jx3/serverInfo/list/" urlParas="?search=${search!}&daterange=${daterange!}" />-->
+                    <!--</div>-->
+                    <!--<div class="col-md-6 pull-left">-->
+                        <#include "/common/paginateParam.html" />
+                        <@paginate currentPage=page.current totalPage=page.pages pageSize=page.size totalRecords=page.total formId='searchForm' />
+                    <!--</div>-->
+                </div>
+            </div><!-- /.box -->
+        </div>
+</div>
+</section><!-- /.content -->
+</div><!-- /.content-wrapper -->
+</@body>
+<@footer>
+</@footer>

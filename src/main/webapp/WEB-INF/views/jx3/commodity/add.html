@@ -1,0 +1,104 @@
+<#include "/common/layout_dl.html">
+<@header>
+<link rel="stylesheet" href="/plugins/bootstrap-fileinput/css/fileinput.min.css">
+<script src="/plugins/My97DatePicker/WdatePicker.js" charset="utf-8"></script>
+</@header>
+<@body>
+<form class="form-horizontal layui-form layui-form-pane" method="post" action="/jx3/commodity/add">
+    <div class="box-body">
+        <div class="form-group">
+            <label for="typeId" class="col-sm-2 control-label">商品类型</label>
+            <div class="col-sm-10">
+                <select id="typeId" name="typeId" class="form-control select2" lay-ignore style="width: 100%;"
+                        lay-verify="required">
+                    <#list typeList as type>
+                    <option value="${type.id}">${type.name}</option>
+                </#list>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">商品名称</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="name" placeholder="8周年礼盒......">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">别名</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="alias" placeholder="泡面男......">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">发行日期</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" onclick="WdatePicker()" name="publishDate" placeholder="请选择发行日期......" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="fileImg">商品图片</label>
+            <input type="hidden" id="imgPath" name="imgPath">
+            <div class="col-sm-10">
+                <input name="file" type="file" class="file-loading" multiple id="fileImg">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">排序号</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="sortNum" placeholder="倒序......" lay-verify="required|number">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">描述</label>
+            <div class="col-sm-10">
+                        <textarea class="form-control" name="remarks" rows="3"
+                                  placeholder="请输入描述，最多200个字符 ..."></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"></label>
+            <div class="col-sm-10">
+                <button type="submit" class="btn btn-success" lay-submit lay-filter="submit"><i
+                        class="fa fa-save"></i> 提 交
+                </button>
+                <a class="btn btn-default" href="javascript:parent.layer.closeAll('iframe');"><i
+                        class="fa fa-close"></i> 取消</a>
+            </div>
+        </div>
+    </div>
+</form>
+</@body>
+<@footer>
+<script src="/plugins/bootstrap-fileinput/js/fileinput.min.js"></script>
+<script src="/plugins/bootstrap-fileinput/js/locales/zh.js"></script>
+<script>
+    //初始化fileinput控件（第一次初始化）
+    function initFileInput(ctrlName, uploadUrl) {
+        var control = $('#' + ctrlName);
+
+        control.fileinput({
+            maxFileCount:4,
+            language: 'zh', //设置语言
+            uploadUrl: uploadUrl, //上传的地址
+            allowedFileExtensions : ['jpg', 'png','gif'],//接收的文件后缀
+            showUpload: true, //是否显示上传按钮
+            showCaption: false,//是否显示标题
+            browseClass: "btn btn-primary",
+            msgFilesTooMany: "最多只能上传{m}张图片！"
+        });
+    }
+
+    initFileInput("fileImg", "/file/upload");
+
+    //上传成功回调函数
+    $('#fileImg').on("fileuploaded", function(event, data, previewId, index) {
+        var result = data.response;
+        console.log(result.status);
+        console.log(result.urls);
+        $('#imgPath').val($('#imgPath').val()+'@'+result.fileNames[0]);
+        console.log("urls=>"+$("#imgPath").val());
+    });
+
+</script>
+</@footer>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.yangyy.jx3.mapper.HotSearchMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="cn.yangyy.jx3.entity.HotSearch">
+		<id column="id" property="id" />
+		<result column="search_text" property="searchText" />
+		<result column="search_count" property="searchCount" />
+		<result column="status" property="status" />
+		<result column="view_flag" property="viewFlag" />
+		<result column="last_search_time" property="lastSearchTime" />
+	</resultMap>
+
+</mapper>

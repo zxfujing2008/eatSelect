@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.yangyy.jx3.mapper.CommodityMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="cn.yangyy.jx3.entity.Commodity">
+		<id column="id" property="id" />
+		<result column="type_id" property="typeId" />
+		<result column="name" property="name" />
+		<result column="alias" property="alias" />
+		<result column="publish_date" property="publishDate" />
+		<result column="remarks" property="remarks" />
+		<result column="create_by" property="createBy" />
+		<result column="create_date" property="createDate" />
+		<result column="del_flag" property="delFlag" />
+		<result column="sort_num" property="sortNum" />
+	</resultMap>
+
+
+	<resultMap id="extendsImg" type="cn.yangyy.jx3.entity.vo.CommodityVo" extends="BaseResultMap">
+		<collection property="imgs"
+					column="id"
+					select="cn.yangyy.jx3.mapper.CommodityImgMapper.findById"
+		>
+		</collection>
+	</resultMap>
+
+	<select id="selectPage" resultMap="extendsImg">
+		select id,type_id,name,alias,publish_date,remarks,create_by,create_date,del_flag,sort_num from jx3_commodity t
+		<where>
+			<if test="commodity.typeId!=null and commodity.typeId != ''">
+				and t.type_id = #{commodity.typeId}
+			</if>
+			<if test="commodity.name!= null and commodity.name !=''">
+				and t.name like concat('%',#{commodity.name},'%')
+			</if>
+			<if test="commodity.alias!= null and commodity.alias !=''">
+				and t.alias like concat('%',#{commodity.alias},'%')
+			</if>
+			<if test="commodity.delFlag!=null and commodity.delFlag !=''">
+				and t.del_flag = #{commodity.delFlag}
+			</if>
+		</where>
+		ORDER BY t.sort_num DESC
+	</select>
+
+</mapper>

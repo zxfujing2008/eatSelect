@@ -1,0 +1,143 @@
+<#include "/common/layout_dl.html">
+<@header>
+<link rel="stylesheet" href="/plugins/bootstrap-fileinput/css/fileinput.min.css">
+<script src="/plugins/My97DatePicker/WdatePicker.js" charset="utf-8"></script>
+</@header>
+<@body>
+<form class="form-horizontal layui-form layui-form-pane" method="post" action="/jx3/commodityTrans/add">
+    <div class="box-body">
+        <div class="form-group">
+            <label for="commodityId" class="col-sm-2 control-label">商品名称</label>
+            <div class="col-sm-10">
+                <select id="commodityId" name="commodityId" class="form-control select2" lay-ignore style="width: 100%;"
+                        lay-verify="required">
+                    <#list commodities as commodity>
+                    <option value="${commodity.id}">${commodity.name}</option>
+                </#list>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="serverId" class="col-sm-2 control-label">区服</label>
+            <div class="col-sm-10">
+                <select id="serverId" name="serverId" class="form-control select2" lay-ignore style="width: 100%;"
+                        lay-verify="required">
+                    <#list serverInfos as serverInfo>
+                    <option value="${serverInfo.id}"><#list networks as nw><#if nw.code==serverInfo.network>${nw.text}</#if></#list>${serverInfo.serial}${serverInfo.name}</option>
+            </#list>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">成交价格</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="dealPrice" placeholder="请输入价格，支持2位小数" onkeyup="clearNoNum(this)">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">报价人</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="quotation" placeholder="填你的游戏名,别匿名了吧......">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">成交日期</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" onclick="WdatePicker()" name="transactionDate" placeholder="成交日期填一下下......" readonly>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label" for="fileImg">成交图片(最多4张)</label>
+        <input type="hidden" id="img" name="img">
+        <div class="col-sm-10">
+            <input name="file" type="file" class="file-loading" multiple id="fileImg">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="trdPlatform" class="col-sm-2 control-label">交易平台</label>
+        <div class="col-sm-10">
+            <select id="trdPlatform" name="trdPlatform" class="form-control select2" lay-ignore style="width: 100%;"
+                    lay-verify="required">
+                <#list trdPlatforms as trdPlatform>
+                <option value="${trdPlatform.code}">${trdPlatform.text}</option>
+            </#list>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">描述</label>
+        <div class="col-sm-10">
+                        <textarea class="form-control" name="remarks" rows="3"
+                                  placeholder="请输入描述，最多300个字符 ..."></textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label"></label>
+        <div class="col-sm-10">
+            <button type="submit" class="btn btn-success" lay-submit lay-filter="submit"><i
+                    class="fa fa-save"></i> 提 交
+            </button>
+            <a class="btn btn-default" href="javascript:parent.layer.closeAll('iframe');"><i
+                    class="fa fa-close"></i> 取消</a>
+        </div>
+    </div>
+    </div>
+</form>
+</@body>
+<@footer>
+<script src="/plugins/bootstrap-fileinput/js/fileinput.min.js"></script>
+<script src="/plugins/bootstrap-fileinput/js/locales/zh.js"></script>
+<script>
+    //初始化fileinput控件（第一次初始化）
+    function initFileInput(ctrlName, uploadUrl) {
+        var control = $('#' + ctrlName);
+
+        control.fileinput({
+            initialPreview: [
+                <#list imgs as img>
+                  '/upload/${(img.path)!}',
+                 </#list>
+            ],
+        initialPreviewAsData: true,
+            initialPreviewConfig: [
+
+                <#list imgs as img>
+                    {caption: '/upload/${(img.path)!}',  width: "120px", key: '${(img.id)!}', showDelete: true, url:"/jx3/commodityTrans/deleteImg",extra:{imgId:'${(img.id)}'}},
+                </#list>
+             ],
+            maxFileCount:4,
+            language: 'zh', //设置语言
+            uploadUrl: uploadUrl, //上传的地址
+            allowedFileExtensions : ['jpg', 'png','gif'],//接收的文件后缀
+            showUpload: true, //是否显示上传按钮
+            showCaption: false,//是否显示标题
+            browseClass: "btn btn-primary",
+            msgFilesTooMany: "最多只能上传{m}张图片！"
+        });
+    }
+
+    initFileInput("fileImg", "/file/upload");
+
+    //上传成功回调函数
+    $('#fileImg').on("fileuploaded", function(event, data, previewId, index) {
+        var result = data.response;
+        console.log(result.status);
+        console.log(result.urls);
+        $('#img').val($('#img').val()+'@'+result.fileNames[0]);
+        console.log("urls=>"+$("#img").val());
+    });
+
+    function clearNoNum(obj) {
+        obj.value = obj.value.replace(/[^\d.]/g, ""); //清除"数字"和"."以外的字符
+
+        obj.value = obj.value.replace(/^\./g, ""); //验证第一个字符是数字而不是
+
+        obj.value = obj.value.replace(/\.{2,}/g, "."); //只保留第一个. 清除多余的
+
+        obj.value = obj.value.replace(".", "$#$").replace(/\./g, "").replace(
+            "$#$", ".");
+
+        obj.value = obj.value.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3'); //只能输入两个小数
+    }
+</script>
+</@footer>
